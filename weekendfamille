@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weekend famille — 31 juillet & 1er août</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --teal: #00beb5;
+      --green: #00e07e;
+      --teal-light: rgba(0,190,181,0.08);
+      --green-light: rgba(0,224,126,0.10);
+      --radius: 14px;
+      --bg: #eaf2f2;
+    }
+    body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); min-height: 100vh; }
+    .page { padding: 2rem 1.5rem; max-width: 760px; margin: 0 auto; }
+
+    .hero { margin-bottom: 1.5rem; }
+    .hero-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); margin-bottom: 6px; }
+    .hero-title { font-size: 26px; font-weight: 600; color: #1a2e2d; line-height: 1.2; }
+
+    .rsvp-card { background: #fff; border: 1px solid rgba(0,190,181,0.25); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.25rem; }
+    .rsvp-card-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--teal); margin-bottom: 1rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+    @media (max-width: 520px) { .form-row { grid-template-columns: 1fr; } }
+    .field label { display: block; font-size: 11px; font-weight: 500; color: #6b8080; margin-bottom: 5px; letter-spacing: 0.04em; }
+    select {
+      width: 100%; font-family: 'Space Grotesk', sans-serif; font-size: 13px;
+      border: 1px solid rgba(0,190,181,0.3); border-radius: 8px;
+      background: #fff; color: #1a2e2d;
+      padding: 8px 10px; outline: none; transition: border-color 0.15s;
+    }
+    select:focus { border-color: var(--teal); }
+
+    .btn-submit {
+      width: 100%; padding: 11px;
+      background: linear-gradient(90deg, var(--teal), var(--green));
+      color: #fff; border: none; border-radius: 10px;
+      font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: opacity 0.15s;
+    }
+    .btn-submit:hover { opacity: 0.88; }
+    .success-msg { font-size: 12px; color: #00a060; margin-top: 8px; text-align: center; display: none; font-weight: 500; }
+
+    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+    .metric { border-radius: 12px; padding: 1rem; text-align: center; border: 1px solid rgba(0,190,181,0.15); }
+    .metric.total { background: linear-gradient(135deg, rgba(0,190,181,0.10), rgba(0,224,126,0.08)); }
+    .metric.gp { background: var(--teal-light); }
+    .metric.ab { background: var(--green-light); }
+    .metric-val { font-size: 30px; font-weight: 600; color: #1a2e2d; }
+    .metric.total .metric-val { background: linear-gradient(90deg, var(--teal), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .metric-label { font-size: 11px; color: #6b8080; margin-top: 3px; }
+
+    .chart-card { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.25rem; }
+    .chart-card-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6b8080; margin-bottom: .75rem; }
+    .chart-wrap { position: relative; width: 100%; height: 160px; }
+
+    .legend { display: flex; gap: 16px; font-size: 12px; color: #6b8080; margin-bottom: 10px; align-items: center; }
+    .dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; }
+
+    .name-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 480px) { .name-boxes { grid-template-columns: 1fr; } }
+    .name-box { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-radius: var(--radius); padding: 1rem; }
+    .name-box.gp { border-color: rgba(0,190,181,0.25); }
+    .name-box.ab { border-color: rgba(0,224,126,0.3); }
+    .name-box-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+    .name-box.gp .name-box-title { color: var(--teal); }
+    .name-box.ab .name-box-title { color: #00a060; }
+    .name-tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; margin: 3px; }
+    .name-tag.gp { background: var(--teal-light); color: #00857e; }
+    .name-tag.ab { background: var(--green-light); color: #007a45; }
+    .empty-msg { font-size: 12px; color: #6b8080; font-style: italic; }
+
+    .sync-status { font-size: 11px; color: #6b8080; text-align: right; margin-bottom: 10px; }
+    .sync-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin-right: 4px; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="hero">
+    <div class="hero-eyebrow">31 juillet & 1er août — 2 nuits</div>
+    <div class="hero-title">Weekend famille</div>
+  </div>
+
+  <div class="rsvp-card">
+    <div class="rsvp-card-title">Ta réponse</div>
+    <div class="form-row">
+      <div class="field">
+        <label>C'est qui ?</label>
+        <select id="sel-name">
+          <option value="">Choisir...</option>
+          <option>Alice</option>
+          <option>Bouam</option>
+          <option>Clara</option>
+          <option>Dalila</option>
+          <option>Élie</option>
+          <option>Elisa</option>
+          <option>Ève</option>
+          <option>Hadda</option>
+          <option>Héloïse</option>
+          <option>Houcine</option>
+          <option>Inès</option>
+          <option>Marilou</option>
+          <option>Mohamed</option>
+          <option>Rachid</option>
+          <option>Samia</option>
+          <option>Samy</option>
+          <option>Toumi</option>
+          <option>Zouzou</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>On vient à combien ?</label>
+        <select id="sel-count">
+          <option value="">Choisir...</option>
+          <option value="1">1 personne</option>
+          <option value="2">2 personnes</option>
+          <option value="3">3 personnes</option>
+          <option value="4">4 personnes</option>
+          <option value="5">5 personnes</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Où vous dormez ?</label>
+        <select id="sel-lodging">
+          <option value="">Choisir...</option>
+          <option value="gp">Maison des grands-parents</option>
+          <option value="ab">Airbnb</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-submit" onclick="submitRSVP()">Envoyer</button>
+    <div class="success-msg" id="success-msg">Réponse enregistrée !</div>
+  </div>
+
+  <div class="sync-status"><span class="sync-dot"></span>Données partagées en temps réel</div>
+
+  <div class="metrics">
+    <div class="metric total">
+      <div class="metric-val" id="total-people">0</div>
+      <div class="metric-label">personnes au total</div>
+    </div>
+    <div class="metric gp">
+      <div class="metric-val" id="total-gp" style="color: var(--teal);">0</div>
+      <div class="metric-label">grands-parents</div>
+    </div>
+    <div class="metric ab">
+      <div class="metric-val" id="total-ab" style="color: #00a060;">0</div>
+      <div class="metric-label">airbnb</div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-card-title">Répartition logement</div>
+    <div class="legend">
+      <span><span class="dot" style="background:var(--teal)"></span>Maison des grands-parents</span>
+      <span><span class="dot" style="background:var(--green)"></span>Airbnb</span>
+    </div>
+    <div class="chart-wrap"><canvas id="barChart"></canvas></div>
+  </div>
+
+  <div class="name-boxes">
+    <div class="name-box gp">
+      <div class="name-box-title">Maison des grands-parents</div>
+      <div id="names-gp"><span class="empty-msg">Personne pour l'instant</span></div>
+    </div>
+    <div class="name-box ab">
+      <div class="name-box-title">Airbnb</div>
+      <div id="names-ab"><span class="empty-msg">Personne pour l'instant</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'famille_rsvp_v1';
+  let responses = [];
+  let barChart;
+
+  function loadFromStorage() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) { responses = JSON.parse(saved); updateDashboard(); }
+    } catch(e) {}
+  }
+
+  function saveToStorage() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(responses)); } catch(e) {}
+  }
+
+  function initChart() {
+    barChart = new Chart(document.getElementById('barChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Maison des grands-parents', 'Airbnb'],
+        datasets: [{ data: [0, 0], backgroundColor: ['#00beb5', '#00e07e'], borderRadius: 8, borderSkipped: false }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { display: false, beginAtZero: true },
+          x: { ticks: { font: { family: 'Space Grotesk', size: 12 }, color: '#666' }, grid: { display: false }, border: { display: false } }
+        }
+      }
+    });
+  }
+
+  function submitRSVP() {
+    const name = document.getElementById('sel-name').value;
+    const count = parseInt(document.getElementById('sel-count').value);
+    const lodging = document.getElementById('sel-lodging').value;
+    if (!name || !count || !lodging) { alert('Remplis tout !'); return; }
+    const existing = responses.findIndex(r => r.name === name);
+    if (existing >= 0) responses[existing] = { name, count, lodging };
+    else responses.push({ name, count, lodging });
+    saveToStorage();
+    document.getElementById('sel-name').value = '';
+    document.getElementById('sel-count').value = '';
+    document.getElementById('sel-lodging').value = '';
+    const msg = document.getElementById('success-msg');
+    msg.style.display = 'block';
+    setTimeout(() => msg.style.display = 'none', 2500);
+    updateDashboard();
+  }
+
+  function updateDashboard() {
+    let total = 0, gpCount = 0, abCount = 0, gpNames = [], abNames = [];
+    responses.forEach(r => {
+      total += r.count;
+      if (r.lodging === 'gp') { gpCount += r.count; gpNames.push(r); }
+      else { abCount += r.count; abNames.push(r); }
+    });
+    document.getElementById('total-people').textContent = total;
+    document.getElementById('total-gp').textContent = gpCount;
+    document.getElementById('total-ab').textContent = abCount;
+    barChart.data.datasets[0].data = [gpCount, abCount];
+    barChart.update();
+    const render = (arr, cls) => arr.length === 0
+      ? '<span class="empty-msg">Personne pour l\'instant</span>'
+      : arr.map(r => `<span class="name-tag ${cls}">${r.name} (${r.count})</span>`).join('');
+    document.getElementById('names-gp').innerHTML = render(gpNames, 'gp');
+    document.getElementById('names-ab').innerHTML = render(abNames, 'ab');
+  }
+
+  initChart();
+  loadFromStorage();
+</script>
+</body>
+</html>
