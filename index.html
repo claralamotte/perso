@@ -28,16 +28,29 @@
     .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
     @media (max-width: 520px) { .form-row { grid-template-columns: 1fr; } }
     .field label { display: block; font-size: 11px; font-weight: 500; color: #6b8080; margin-bottom: 5px; letter-spacing: 0.04em; }
-    select {
+    select, input[type="text"] {
       width: 100%; font-family: 'Space Grotesk', sans-serif; font-size: 13px;
       border: 1px solid rgba(0,190,181,0.3); border-radius: 8px;
       background: #fff; color: #1a2e2d;
       padding: 8px 10px; outline: none; transition: border-color 0.15s;
     }
-    select:focus { border-color: var(--teal); }
+    select:focus, input[type="text"]:focus { border-color: var(--teal); }
+    input[type="text"]::placeholder { color: #aab8b8; }
+
+    .divider { border: none; border-top: 1px solid rgba(0,190,181,0.15); margin: 1rem 0; }
+    .companions-section { display: none; }
+    .companions-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6b8080; margin-bottom: 10px; }
+    .companions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 480px) { .companions-grid { grid-template-columns: 1fr; } }
+    .companion-field label { display: block; font-size: 11px; font-weight: 500; color: #6b8080; margin-bottom: 5px; }
+    .optional-badge {
+      display: inline-block; font-size: 10px; font-weight: 500;
+      background: rgba(0,190,181,0.10); color: var(--teal);
+      border-radius: 4px; padding: 1px 5px; margin-left: 5px; vertical-align: middle;
+    }
 
     .btn-submit {
-      width: 100%; padding: 11px;
+      width: 100%; padding: 11px; margin-top: 1rem;
       background: linear-gradient(90deg, var(--teal), var(--green));
       color: #fff; border: none; border-radius: 10px;
       font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600;
@@ -54,13 +67,11 @@
     .metric-val { font-size: 26px; font-weight: 600; color: #1a2e2d; }
     .metric.total .metric-val { background: linear-gradient(90deg, var(--teal), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .metric-label { font-size: 11px; color: #6b8080; margin-top: 3px; }
-
     .range-note { font-size: 11px; color: #6b8080; text-align: center; margin-top: -10px; margin-bottom: 14px; display: none; }
 
     .chart-card { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.25rem; }
     .chart-card-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6b8080; margin-bottom: .75rem; }
-    .chart-wrap { position: relative; width: 100%; height: 180px; }
-
+    .chart-wrap { position: relative; width: 100%; height: 200px; }
     .legend { display: flex; gap: 14px; font-size: 12px; color: #6b8080; margin-bottom: 10px; align-items: center; flex-wrap: wrap; }
     .legend-item { display: flex; align-items: center; gap: 5px; }
     .dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; }
@@ -80,7 +91,6 @@
     .name-tag.uncertain.gp { border-color: #00857e; }
     .name-tag.uncertain.ab { border-color: #007a45; }
     .empty-msg { font-size: 12px; color: #6b8080; font-style: italic; }
-
     .footer { font-size: 11px; color: #6b8080; text-align: right; margin-top: 1.5rem; }
   </style>
 </head>
@@ -120,7 +130,7 @@
       </div>
       <div class="field">
         <label>On vient à combien ?</label>
-        <select id="sel-count">
+        <select id="sel-count" onchange="onCountChange()">
           <option value="">Choisir...</option>
           <optgroup label="Confirmé">
             <option value="1:1">1 personne</option>
@@ -148,6 +158,13 @@
         </select>
       </div>
     </div>
+
+    <div class="companions-section" id="companions-section">
+      <hr class="divider">
+      <div class="companions-title">Prénoms des accompagnants</div>
+      <div class="companions-grid" id="companions-grid"></div>
+    </div>
+
     <button class="btn-submit" onclick="submitRSVP()">Envoyer</button>
     <div class="success-msg" id="success-msg">Réponse enregistrée !</div>
   </div>
@@ -194,9 +211,70 @@
 </div>
 
 <script>
-  const STORAGE_KEY = 'famille_rsvp_v2';
+  const STORAGE_KEY = 'famille_rsvp_v3';
   let responses = [];
   let barChart;
+  let gpMin = 0, gpMax = 0, abMin = 0, abMax = 0;
+
+  function onCountChange() {
+    const val = document.getElementById('sel-count').value;
+    const section = document.getElementById('companions-section');
+    const grid = document.getElementById('companions-grid');
+    if (!val) { section.style.display = 'none'; return; }
+
+    const [minStr, maxStr] = val.split(':');
+    const countMin = parseInt(minStr);
+    const countMax = parseInt(maxStr);
+    const totalFields = countMax - 1;
+    const confirmedFields = countMin - 1;
+
+    if (totalFields <= 0) { section.style.display = 'none'; return; }
+
+    grid.innerHTML = '';
+    for (let i = 0; i < totalFields; i++) {
+      const isOptional = i >= confirmedFields;
+      const num = i + 2;
+      const div = document.createElement('div');
+      div.className = 'companion-field';
+      div.innerHTML = `
+        <label>Personne ${num}${isOptional ? ' <span class="optional-badge">optionnel</span>' : ''}</label>
+        <input type="text" id="companion-${i}" placeholder="Prénom..." autocomplete="off" />
+      `;
+      grid.appendChild(div);
+    }
+    section.style.display = 'block';
+  }
+
+  const stackedLabelPlugin = {
+    id: 'stackedLabel',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      const mins = [gpMin, abMin];
+      const maxs = [gpMax, abMax];
+      chart.data.labels.forEach((label, i) => {
+        const meta0 = chart.getDatasetMeta(0);
+        const meta1 = chart.getDatasetMeta(1);
+        const bar0 = meta0.data[i];
+        const bar1 = meta1.data[i];
+        if (!bar0) return;
+        const xPos = bar0.x;
+        const minVal = mins[i];
+        const maxVal = maxs[i];
+        ctx.save();
+        ctx.font = '600 13px Space Grotesk, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillStyle = '#1a2e2d';
+        if (maxVal > minVal) {
+          const topY = bar1 ? Math.min(bar0.y, bar1.y) - 6 : bar0.y - 6;
+          ctx.fillText(`${minVal}–${maxVal}`, xPos, topY);
+        } else if (minVal > 0) {
+          ctx.fillText(`${minVal}`, xPos, bar0.y - 6);
+        }
+        ctx.restore();
+      });
+    }
+  };
 
   function loadFromStorage() {
     try {
@@ -212,42 +290,20 @@
   function initChart() {
     barChart = new Chart(document.getElementById('barChart'), {
       type: 'bar',
+      plugins: [stackedLabelPlugin],
       data: {
         labels: ['Maison des grands-parents', 'Airbnb'],
         datasets: [
-          {
-            label: 'Confirmé',
-            data: [0, 0],
-            backgroundColor: ['#00beb5', '#00e07e'],
-            borderRadius: 6,
-            borderSkipped: false,
-            barPercentage: 0.45,
-            categoryPercentage: 0.6,
-          },
-          {
-            label: 'Fourchette haute',
-            data: [0, 0],
-            backgroundColor: ['rgba(0,190,181,0.22)', 'rgba(0,224,126,0.22)'],
-            borderColor: ['rgba(0,190,181,0.55)', 'rgba(0,224,126,0.6)'],
-            borderWidth: { top: 1.5, left: 0, right: 0, bottom: 0 },
-            borderRadius: 6,
-            borderSkipped: false,
-            barPercentage: 0.45,
-            categoryPercentage: 0.6,
-          }
+          { label: 'Confirmé', data: [0,0], backgroundColor: ['#00beb5','#00e07e'], borderRadius: 6, borderSkipped: false, barPercentage: 0.45, categoryPercentage: 0.6 },
+          { label: 'Fourchette haute', data: [0,0], backgroundColor: ['rgba(0,190,181,0.22)','rgba(0,224,126,0.22)'], borderColor: ['rgba(0,190,181,0.55)','rgba(0,224,126,0.6)'], borderWidth: { top: 1.5, left: 0, right: 0, bottom: 0 }, borderRadius: 6, borderSkipped: false, barPercentage: 0.45, categoryPercentage: 0.6 }
         ]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
+        layout: { padding: { top: 24 } },
         plugins: {
           legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: (ctx) => ctx.datasetIndex === 0
-                ? ` Confirmé : ${ctx.raw}`
-                : ` Fourchette haute : +${ctx.raw}`
-            }
-          }
+          tooltip: { callbacks: { label: (ctx) => ctx.datasetIndex === 0 ? ` Confirmé : ${ctx.raw}` : ` Fourchette haute : +${ctx.raw}` } }
         },
         scales: {
           x: { stacked: true, ticks: { font: { family: 'Space Grotesk', size: 12 }, color: '#666' }, grid: { display: false }, border: { display: false } },
@@ -266,16 +322,26 @@
     const [minStr, maxStr] = countVal.split(':');
     const countMin = parseInt(minStr);
     const countMax = parseInt(maxStr);
-    const entry = { name, countMin, countMax, lodging, uncertain: countMin !== countMax };
 
+    const companions = [];
+    for (let i = 0; i < countMax - 1; i++) {
+      const input = document.getElementById(`companion-${i}`);
+      if (input) companions.push(input.value.trim());
+    }
+
+    const entry = { name, countMin, countMax, lodging, uncertain: countMin !== countMax, companions };
     const existing = responses.findIndex(r => r.name === name);
     if (existing >= 0) responses[existing] = entry;
     else responses.push(entry);
 
     saveToStorage();
+
     document.getElementById('sel-name').value = '';
     document.getElementById('sel-count').value = '';
     document.getElementById('sel-lodging').value = '';
+    document.getElementById('companions-section').style.display = 'none';
+    document.getElementById('companions-grid').innerHTML = '';
+
     const msg = document.getElementById('success-msg');
     msg.style.display = 'block';
     setTimeout(() => msg.style.display = 'none', 2500);
@@ -283,13 +349,14 @@
   }
 
   function updateDashboard() {
-    let totalMin = 0, totalMax = 0, gpMin = 0, gpMax = 0, abMin = 0, abMax = 0;
-    let gpNames = [], abNames = [];
+    let totalMin = 0, totalMax = 0;
+    gpMin = 0; gpMax = 0; abMin = 0; abMax = 0;
+    let gpEntries = [], abEntries = [];
 
     responses.forEach(r => {
       totalMin += r.countMin; totalMax += r.countMax;
-      if (r.lodging === 'gp') { gpMin += r.countMin; gpMax += r.countMax; gpNames.push(r); }
-      else { abMin += r.countMin; abMax += r.countMax; abNames.push(r); }
+      if (r.lodging === 'gp') { gpMin += r.countMin; gpMax += r.countMax; gpEntries.push(r); }
+      else { abMin += r.countMin; abMax += r.countMax; abEntries.push(r); }
     });
 
     const hasUncertain = totalMin !== totalMax;
@@ -301,24 +368,27 @@
     if (hasUncertain) {
       note.style.display = 'block';
       note.textContent = `Entre ${totalMin} personnes confirmées et ${totalMax} au maximum selon les incertitudes`;
-    } else {
-      note.style.display = 'none';
-    }
+    } else { note.style.display = 'none'; }
 
     barChart.data.datasets[0].data = [gpMin, abMin];
     barChart.data.datasets[1].data = [gpMax - gpMin, abMax - abMin];
     barChart.update();
 
+    const renderEntry = (r, cls) => {
+      const allNames = [r.name, ...(r.companions || []).filter(c => c)];
+      return allNames.map((n, idx) => {
+        const isOptional = idx >= r.countMin;
+        const classes = isOptional ? `name-tag ${cls} uncertain` : `name-tag ${cls}`;
+        return `<span class="${classes}">${isOptional ? n + ' ?' : n}</span>`;
+      }).join('');
+    };
+
     const render = (arr, cls) => arr.length === 0
       ? '<span class="empty-msg">Personne pour l\'instant</span>'
-      : arr.map(r => {
-          const label = r.countMin !== r.countMax ? `${r.name} (${r.countMin}–${r.countMax} ?)` : `${r.name} (${r.countMin})`;
-          const classes = r.uncertain ? `name-tag ${cls} uncertain` : `name-tag ${cls}`;
-          return `<span class="${classes}">${label}</span>`;
-        }).join('');
+      : arr.map(r => renderEntry(r, cls)).join('');
 
-    document.getElementById('names-gp').innerHTML = render(gpNames, 'gp');
-    document.getElementById('names-ab').innerHTML = render(abNames, 'ab');
+    document.getElementById('names-gp').innerHTML = render(gpEntries, 'gp');
+    document.getElementById('names-ab').innerHTML = render(abEntries, 'ab');
   }
 
   initChart();
