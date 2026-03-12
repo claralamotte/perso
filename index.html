@@ -13,81 +13,81 @@
       --green: #00e07e;
       --teal-light: rgba(0,190,181,0.08);
       --green-light: rgba(0,224,126,0.10);
-      --radius: 14px;
+      --radius: 12px;
       --bg: #eaf2f2;
     }
-    body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); min-height: 100vh; }
-    .page { padding: 2rem 1.5rem; max-width: 760px; margin: 0 auto; }
+    body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); font-size: 14px; }
+    .page { padding: 1rem; max-width: 480px; margin: 0 auto; }
 
-    .hero { margin-bottom: 1.5rem; }
-    .hero-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); margin-bottom: 6px; }
-    .hero-title { font-size: 26px; font-weight: 600; color: #1a2e2d; line-height: 1.2; }
+    .hero { margin-bottom: 1rem; }
+    .hero-eyebrow { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); margin-bottom: 4px; }
+    .hero-title { font-size: 20px; font-weight: 600; color: #1a2e2d; }
 
-    .rsvp-card { background: #fff; border: 1px solid rgba(0,190,181,0.25); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.25rem; }
-    .rsvp-card-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--teal); margin-bottom: 1rem; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
-    @media (max-width: 520px) { .form-row { grid-template-columns: 1fr; } }
-    .field label { display: block; font-size: 11px; font-weight: 500; color: #6b8080; margin-bottom: 5px; letter-spacing: 0.04em; }
+    .rsvp-card { background: #fff; border: 1px solid rgba(0,190,181,0.25); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; }
+    .rsvp-card-title { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--teal); margin-bottom: 0.75rem; }
+    .form-col { display: flex; flex-direction: column; gap: 8px; }
+    .field label { display: block; font-size: 10px; font-weight: 500; color: #6b8080; margin-bottom: 4px; letter-spacing: 0.04em; }
     select, input[type="text"] {
-      width: 100%; font-family: 'Space Grotesk', sans-serif; font-size: 13px;
+      width: 100%; font-family: 'Space Grotesk', sans-serif; font-size: 14px;
       border: 1px solid rgba(0,190,181,0.3); border-radius: 8px;
       background: #fff; color: #1a2e2d;
-      padding: 8px 10px; outline: none; transition: border-color 0.15s;
+      padding: 10px 12px; outline: none; transition: border-color 0.15s;
+      -webkit-appearance: none;
     }
     select:focus, input[type="text"]:focus { border-color: var(--teal); }
     input[type="text"]::placeholder { color: #aab8b8; }
 
-    .divider { border: none; border-top: 1px solid rgba(0,190,181,0.15); margin: 1rem 0; }
+    .divider { border: none; border-top: 1px solid rgba(0,190,181,0.15); margin: 0.75rem 0; }
     .companions-section { display: none; }
-    .companions-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6b8080; margin-bottom: 10px; }
-    .companions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    @media (max-width: 480px) { .companions-grid { grid-template-columns: 1fr; } }
-    .companion-field label { display: block; font-size: 11px; font-weight: 500; color: #6b8080; margin-bottom: 5px; }
+    .companions-title { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6b8080; margin-bottom: 8px; }
+    .companions-grid { display: flex; flex-direction: column; gap: 8px; }
 
     .btn-submit {
-      width: 100%; padding: 11px; margin-top: 1rem;
+      width: 100%; padding: 12px; margin-top: 0.75rem;
       background: linear-gradient(90deg, var(--teal), var(--green));
       color: #fff; border: none; border-radius: 10px;
-      font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600;
-      cursor: pointer; transition: opacity 0.15s;
+      font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 600;
+      cursor: pointer; -webkit-tap-highlight-color: transparent;
     }
-    .btn-submit:hover { opacity: 0.88; }
-    .success-msg { font-size: 12px; color: #00a060; margin-top: 8px; text-align: center; display: none; font-weight: 500; }
+    .btn-submit:disabled { opacity: 0.6; }
+    .success-msg { font-size: 12px; color: #00a060; margin-top: 6px; text-align: center; display: none; font-weight: 500; }
+    .error-msg { font-size: 12px; color: #e05050; margin-top: 6px; text-align: center; display: none; font-weight: 500; }
 
-    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.25rem; }
-    .metric { border-radius: 12px; padding: 0.9rem 0.75rem; text-align: center; border: 1px solid rgba(0,190,181,0.15); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1rem; }
+    .metric { border-radius: 10px; padding: 0.75rem 0.5rem; text-align: center; border: 1px solid rgba(0,190,181,0.15); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
     .metric.total { background: linear-gradient(135deg, rgba(0,190,181,0.10), rgba(0,224,126,0.08)); }
     .metric.gp { background: var(--teal-light); }
     .metric.ab { background: var(--green-light); }
-    .metric-val { font-weight: 600; color: #1a2e2d; line-height: 1.15; }
-    .metric-val.is-number { font-size: 28px; }
-    .metric-val.is-range { font-size: 20px; }
+    .metric-val { font-weight: 600; color: #1a2e2d; line-height: 1.1; }
+    .metric-val.is-number { font-size: 24px; }
+    .metric-val.is-range { font-size: 13px; }
     .metric.total .metric-val { background: linear-gradient(90deg, var(--teal), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .metric-label { font-size: 10px; color: #6b8080; line-height: 1.3; text-align: center; }
+    .metric-label { font-size: 9px; color: #6b8080; line-height: 1.3; text-align: center; }
 
-    .chart-card { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.25rem; }
-    .chart-card-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6b8080; margin-bottom: .75rem; }
-    .chart-wrap { position: relative; width: 100%; height: 200px; }
-    .legend { display: flex; gap: 10px; font-size: 10px; color: #9bb0b0; margin-top: 10px; align-items: center; flex-wrap: wrap; justify-content: center; }
-    .legend-item { display: flex; align-items: center; gap: 4px; }
-    .dot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; }
+    .chart-card { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; }
+    .chart-card-title { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6b8080; margin-bottom: 0.5rem; }
+    .chart-wrap { position: relative; width: 100%; height: 160px; }
+    .legend { display: flex; gap: 8px; font-size: 9px; color: #9bb0b0; margin-top: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+    .legend-item { display: flex; align-items: center; gap: 3px; }
+    .dot { display: inline-block; width: 7px; height: 7px; border-radius: 2px; flex-shrink: 0; }
 
-    .name-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 480px) { .name-boxes { grid-template-columns: 1fr; } }
-    .name-box { background: #fff; border-radius: var(--radius); padding: 1rem; }
+    .name-boxes { display: flex; flex-direction: column; gap: 10px; }
+    .name-box { background: #fff; border-radius: var(--radius); padding: 0.85rem; }
     .name-box.gp { border: 1px solid rgba(0,190,181,0.25); }
     .name-box.ab { border: 1px solid rgba(0,224,126,0.3); }
-    .name-box-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+    .name-box-title { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
     .name-box.gp .name-box-title { color: var(--teal); }
     .name-box.ab .name-box-title { color: #00a060; }
-    .name-tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; margin: 3px; }
+    .name-tag { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 12px; font-weight: 500; margin: 2px; }
     .name-tag.gp { background: var(--teal-light); color: #00857e; }
     .name-tag.ab { background: var(--green-light); color: #007a45; }
     .name-tag.uncertain { opacity: 0.65; border-style: dashed; border-width: 1px; background: transparent; }
     .name-tag.uncertain.gp { border-color: #00857e; }
     .name-tag.uncertain.ab { border-color: #007a45; }
-    .empty-msg { font-size: 12px; color: #6b8080; font-style: italic; }
-    .footer { font-size: 11px; color: #6b8080; text-align: right; margin-top: 1.5rem; }
+    .empty-msg { font-size: 11px; color: #6b8080; font-style: italic; }
+    .sync-status { font-size: 10px; color: #6b8080; text-align: right; margin-bottom: 8px; }
+    .sync-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); margin-right: 3px; }
+    .footer { font-size: 10px; color: #6b8080; text-align: center; margin-top: 1rem; padding-bottom: 1.5rem; }
   </style>
 </head>
 <body>
@@ -99,7 +99,7 @@
 
   <div class="rsvp-card">
     <div class="rsvp-card-title">Ta réponse</div>
-    <div class="form-row">
+    <div class="form-col">
       <div class="field">
         <label>C'est qui ?</label>
         <select id="sel-name">
@@ -151,6 +151,7 @@
           <option value="">Choisir...</option>
           <option value="gp">Maison des grands-parents</option>
           <option value="ab">Airbnb</option>
+          <option value="home">Chez soi</option>
         </select>
       </div>
     </div>
@@ -161,9 +162,12 @@
       <div class="companions-grid" id="companions-grid"></div>
     </div>
 
-    <button class="btn-submit" onclick="submitRSVP()">Envoyer</button>
+    <button class="btn-submit" id="btn-submit" onclick="submitRSVP()">Envoyer</button>
     <div class="success-msg" id="success-msg">Réponse enregistrée !</div>
+    <div class="error-msg" id="error-msg">Erreur, réessaie dans quelques secondes.</div>
   </div>
+
+  <div class="sync-status"><span class="sync-dot"></span>Données partagées en temps réel</div>
 
   <div class="metrics">
     <div class="metric total">
@@ -172,11 +176,11 @@
     </div>
     <div class="metric gp">
       <div class="metric-val is-number" id="total-gp" style="color: var(--teal);">0</div>
-      <div class="metric-label">personnes chez les grands-parents</div>
+      <div class="metric-label">chez les grands-parents</div>
     </div>
     <div class="metric ab">
       <div class="metric-val is-number" id="total-ab" style="color: #00a060;">0</div>
-      <div class="metric-label">personnes à l'airbnb</div>
+      <div class="metric-label">à l'airbnb</div>
     </div>
   </div>
 
@@ -184,10 +188,10 @@
     <div class="chart-card-title">Répartition logement</div>
     <div class="chart-wrap"><canvas id="barChart"></canvas></div>
     <div class="legend">
-      <span class="legend-item"><span class="dot" style="background:var(--teal)"></span>Maison des grands-parents (confirmé)</span>
-      <span class="legend-item"><span class="dot" style="background:rgba(0,190,181,0.25); border:1px dashed rgba(0,190,181,0.6);"></span>Fourchette haute</span>
+      <span class="legend-item"><span class="dot" style="background:var(--teal)"></span>Grands-parents (confirmé)</span>
+      <span class="legend-item"><span class="dot" style="background:rgba(0,190,181,0.3); border:1px dashed rgba(0,190,181,0.6);"></span>Fourchette haute</span>
       <span class="legend-item"><span class="dot" style="background:var(--green)"></span>Airbnb (confirmé)</span>
-      <span class="legend-item"><span class="dot" style="background:rgba(0,224,126,0.25); border:1px dashed rgba(0,224,126,0.7);"></span>Fourchette haute</span>
+      <span class="legend-item"><span class="dot" style="background:rgba(0,224,126,0.3); border:1px dashed rgba(0,224,126,0.7);"></span>Fourchette haute</span>
     </div>
   </div>
 
@@ -202,11 +206,12 @@
     </div>
   </div>
 
-  <div class="footer">Les réponses sont sauvegardées dans le navigateur de chacun.</div>
+  <div class="footer">Les réponses sont sauvegardées pour tout le monde.</div>
 </div>
 
 <script>
-  const STORAGE_KEY = 'famille_rsvp_v3';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw13skuiKm4_ebfRuYhcSJH0RWhzlAGgNWr9VdFRFNB9hKg3lc1JamQxte-8QoMA3LzHQ/exec';
+
   let responses = [];
   let barChart;
   let gpMin = 0, gpMax = 0, abMin = 0, abMax = 0;
@@ -222,7 +227,7 @@
     grid.innerHTML = '';
     for (let i = 0; i < totalFields; i++) {
       const div = document.createElement('div');
-      div.className = 'companion-field';
+      div.className = 'field';
       div.innerHTML = `<label>Personne ${i + 2}</label><input type="text" id="companion-${i}" placeholder="Prénom..." autocomplete="off" />`;
       grid.appendChild(div);
     }
@@ -241,31 +246,19 @@
         const bar0 = meta0.data[i];
         const bar1 = meta1.data[i];
         if (!bar0) return;
-        const minVal = mins[i];
-        const maxVal = maxs[i];
+        const minVal = mins[i], maxVal = maxs[i];
         if (minVal === 0 && maxVal === 0) return;
         ctx.save();
-        ctx.font = '600 13px Space Grotesk, sans-serif';
+        ctx.font = '600 11px Space Grotesk, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
         ctx.fillStyle = '#1a2e2d';
-        const topY = (bar1 && maxVal > minVal) ? Math.min(bar0.y, bar1.y) - 6 : bar0.y - 6;
-        ctx.fillText(maxVal > minVal ? `Entre ${minVal} & ${maxVal}` : `${minVal}`, bar0.x, topY);
+        const topY = (bar1 && maxVal > minVal) ? Math.min(bar0.y, bar1.y) - 4 : bar0.y - 4;
+        ctx.fillText(maxVal > minVal ? `${minVal}–${maxVal}` : `${minVal}`, bar0.x, topY);
         ctx.restore();
       });
     }
   };
-
-  function loadFromStorage() {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) { responses = JSON.parse(saved); updateDashboard(); }
-    } catch(e) {}
-  }
-
-  function saveToStorage() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(responses)); } catch(e) {}
-  }
 
   function initChart() {
     barChart = new Chart(document.getElementById('barChart'), {
@@ -274,53 +267,85 @@
       data: {
         labels: ['Maison des grands-parents', 'Airbnb'],
         datasets: [
-          { label: 'Confirmé', data: [0,0], backgroundColor: ['#00beb5','#00e07e'], borderRadius: 6, borderSkipped: false, barPercentage: 0.45, categoryPercentage: 0.6 },
-          { label: 'Fourchette haute', data: [0,0], backgroundColor: ['rgba(0,190,181,0.22)','rgba(0,224,126,0.22)'], borderColor: ['rgba(0,190,181,0.55)','rgba(0,224,126,0.6)'], borderWidth: { top: 1.5, left: 0, right: 0, bottom: 0 }, borderRadius: 6, borderSkipped: false, barPercentage: 0.45, categoryPercentage: 0.6 }
+          { label: 'Confirmé', data: [0,0], backgroundColor: ['#00beb5','#00e07e'], borderRadius: 5, borderSkipped: false, barPercentage: 0.5, categoryPercentage: 0.6 },
+          { label: 'Fourchette haute', data: [0,0], backgroundColor: ['rgba(0,190,181,0.22)','rgba(0,224,126,0.22)'], borderColor: ['rgba(0,190,181,0.55)','rgba(0,224,126,0.6)'], borderWidth: { top: 1.5, left: 0, right: 0, bottom: 0 }, borderRadius: 5, borderSkipped: false, barPercentage: 0.5, categoryPercentage: 0.6 }
         ]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
-        layout: { padding: { top: 28 } },
+        layout: { padding: { top: 22 } },
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => ctx.datasetIndex === 0 ? ` Confirmé : ${ctx.raw}` : ` Fourchette haute : +${ctx.raw}` } } },
         scales: {
-          x: {
-            stacked: true,
-            ticks: { font: { family: 'Space Grotesk', size: 13, weight: '600' }, color: '#1a2e2d' },
-            grid: { display: false },
-            border: { display: false }
-          },
+          x: { stacked: true, ticks: { font: { family: 'Space Grotesk', size: 11, weight: '600' }, color: '#1a2e2d', maxRotation: 0 }, grid: { display: false }, border: { display: false } },
           y: { stacked: true, display: false, beginAtZero: true }
         }
       }
     });
   }
 
-  function submitRSVP() {
+  async function loadData() {
+    try {
+      const res = await fetch(SCRIPT_URL);
+      const rows = await res.json();
+      responses = rows.map(r => ({
+        name: r.nom,
+        countMin: parseInt(r.countMin),
+        countMax: parseInt(r.countMax),
+        lodging: r.logement,
+        companions: r.accompagnants ? r.accompagnants.split(',').map(s => s.trim()).filter(Boolean) : []
+      }));
+      updateDashboard();
+    } catch(e) {
+      console.error('Erreur chargement', e);
+    }
+  }
+
+  async function submitRSVP() {
     const name = document.getElementById('sel-name').value;
     const countVal = document.getElementById('sel-count').value;
     const lodging = document.getElementById('sel-lodging').value;
     if (!name || !countVal || !lodging) { alert('Remplis tout !'); return; }
+
     const [minStr, maxStr] = countVal.split(':');
     const countMin = parseInt(minStr), countMax = parseInt(maxStr);
     const companions = [];
     for (let i = 0; i < countMax - 1; i++) {
       const input = document.getElementById(`companion-${i}`);
-      if (input) companions.push(input.value.trim());
+      if (input && input.value.trim()) companions.push(input.value.trim());
     }
-    const entry = { name, countMin, countMax, lodging, uncertain: countMin !== countMax, companions };
-    const existing = responses.findIndex(r => r.name === name);
-    if (existing >= 0) responses[existing] = entry;
-    else responses.push(entry);
-    saveToStorage();
-    document.getElementById('sel-name').value = '';
-    document.getElementById('sel-count').value = '';
-    document.getElementById('sel-lodging').value = '';
-    document.getElementById('companions-section').style.display = 'none';
-    document.getElementById('companions-grid').innerHTML = '';
-    const msg = document.getElementById('success-msg');
-    msg.style.display = 'block';
-    setTimeout(() => msg.style.display = 'none', 2500);
-    updateDashboard();
+
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.textContent = 'Envoi...';
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nom: name, countMin, countMax, logement: lodging, accompagnants: companions.join(', ') })
+      });
+
+      const entry = { name, countMin, countMax, lodging, companions };
+      const existing = responses.findIndex(r => r.name === name);
+      if (existing >= 0) responses[existing] = entry;
+      else responses.push(entry);
+
+      document.getElementById('sel-name').value = '';
+      document.getElementById('sel-count').value = '';
+      document.getElementById('sel-lodging').value = '';
+      document.getElementById('companions-section').style.display = 'none';
+      document.getElementById('companions-grid').innerHTML = '';
+      document.getElementById('success-msg').style.display = 'block';
+      setTimeout(() => document.getElementById('success-msg').style.display = 'none', 3000);
+      updateDashboard();
+    } catch(e) {
+      document.getElementById('error-msg').style.display = 'block';
+      setTimeout(() => document.getElementById('error-msg').style.display = 'none', 3000);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Envoyer';
   }
 
   function setMetric(elId, min, max) {
@@ -342,10 +367,18 @@
     responses.forEach(r => {
       totalMin += r.countMin; totalMax += r.countMax;
       if (r.lodging === 'gp') { gpMin += r.countMin; gpMax += r.countMax; gpEntries.push(r); }
-      else { abMin += r.countMin; abMax += r.countMax; abEntries.push(r); }
+      else if (r.lodging === 'ab') { abMin += r.countMin; abMax += r.countMax; abEntries.push(r); }
     });
 
-    setMetric('total-people', totalMin, totalMax);
+    const elTotal = document.getElementById('total-people');
+    if (totalMin !== totalMax) {
+      elTotal.textContent = `Entre ${totalMin} & ${totalMax}`;
+      elTotal.className = 'metric-val is-range';
+    } else {
+      elTotal.textContent = totalMin;
+      elTotal.className = 'metric-val is-number';
+    }
+
     setMetric('total-gp', gpMin, gpMax);
     setMetric('total-ab', abMin, abMax);
 
@@ -371,7 +404,8 @@
   }
 
   initChart();
-  loadFromStorage();
+  loadData();
+  setInterval(loadData, 10000);
 </script>
 </body>
 </html>
