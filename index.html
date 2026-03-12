@@ -43,11 +43,6 @@
     .companions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     @media (max-width: 480px) { .companions-grid { grid-template-columns: 1fr; } }
     .companion-field label { display: block; font-size: 11px; font-weight: 500; color: #6b8080; margin-bottom: 5px; }
-    .optional-badge {
-      display: inline-block; font-size: 10px; font-weight: 500;
-      background: rgba(0,190,181,0.10); color: var(--teal);
-      border-radius: 4px; padding: 1px 5px; margin-left: 5px; vertical-align: middle;
-    }
 
     .btn-submit {
       width: 100%; padding: 11px; margin-top: 1rem;
@@ -60,14 +55,13 @@
     .success-msg { font-size: 12px; color: #00a060; margin-top: 8px; text-align: center; display: none; font-weight: 500; }
 
     .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.25rem; }
-    .metric { border-radius: 12px; padding: 1rem; text-align: center; border: 1px solid rgba(0,190,181,0.15); }
+    .metric { border-radius: 12px; padding: 0.9rem 0.75rem; text-align: center; border: 1px solid rgba(0,190,181,0.15); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
     .metric.total { background: linear-gradient(135deg, rgba(0,190,181,0.10), rgba(0,224,126,0.08)); }
     .metric.gp { background: var(--teal-light); }
     .metric.ab { background: var(--green-light); }
-    .metric-val { font-size: 26px; font-weight: 600; color: #1a2e2d; }
+    .metric-val { font-size: 22px; font-weight: 600; color: #1a2e2d; white-space: nowrap; }
     .metric.total .metric-val { background: linear-gradient(90deg, var(--teal), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .metric-label { font-size: 11px; color: #6b8080; margin-top: 3px; }
-    .range-note { font-size: 11px; color: #6b8080; text-align: center; margin-top: -10px; margin-bottom: 14px; display: none; }
+    .metric-label { font-size: 10px; color: #6b8080; line-height: 1.3; text-align: center; }
 
     .chart-card { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.25rem; }
     .chart-card-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6b8080; margin-bottom: .75rem; }
@@ -172,18 +166,17 @@
   <div class="metrics">
     <div class="metric total">
       <div class="metric-val" id="total-people">0</div>
-      <div class="metric-label">personnes confirmées</div>
+      <div class="metric-label" id="label-total">personnes au total</div>
     </div>
     <div class="metric gp">
       <div class="metric-val" id="total-gp" style="color: var(--teal);">0</div>
-      <div class="metric-label">grands-parents</div>
+      <div class="metric-label" id="label-gp">personnes chez les grands-parents</div>
     </div>
     <div class="metric ab">
       <div class="metric-val" id="total-ab" style="color: #00a060;">0</div>
-      <div class="metric-label">airbnb</div>
+      <div class="metric-label" id="label-ab">personnes à l'airbnb</div>
     </div>
   </div>
-  <div class="range-note" id="range-note"></div>
 
   <div class="chart-card">
     <div class="chart-card-title">Répartition logement</div>
@@ -221,25 +214,14 @@
     const section = document.getElementById('companions-section');
     const grid = document.getElementById('companions-grid');
     if (!val) { section.style.display = 'none'; return; }
-
-    const [minStr, maxStr] = val.split(':');
-    const countMin = parseInt(minStr);
-    const countMax = parseInt(maxStr);
+    const countMax = parseInt(val.split(':')[1]);
     const totalFields = countMax - 1;
-    const confirmedFields = countMin - 1;
-
     if (totalFields <= 0) { section.style.display = 'none'; return; }
-
     grid.innerHTML = '';
     for (let i = 0; i < totalFields; i++) {
-      const isOptional = i >= confirmedFields;
-      const num = i + 2;
       const div = document.createElement('div');
       div.className = 'companion-field';
-      div.innerHTML = `
-        <label>Personne ${num}${isOptional ? ' <span class="optional-badge">optionnel</span>' : ''}</label>
-        <input type="text" id="companion-${i}" placeholder="Prénom..." autocomplete="off" />
-      `;
+      div.innerHTML = `<label>Personne ${i + 2}</label><input type="text" id="companion-${i}" placeholder="Prénom..." autocomplete="off" />`;
       grid.appendChild(div);
     }
     section.style.display = 'block';
@@ -257,20 +239,16 @@
         const bar0 = meta0.data[i];
         const bar1 = meta1.data[i];
         if (!bar0) return;
-        const xPos = bar0.x;
         const minVal = mins[i];
         const maxVal = maxs[i];
+        if (minVal === 0 && maxVal === 0) return;
         ctx.save();
         ctx.font = '600 13px Space Grotesk, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
         ctx.fillStyle = '#1a2e2d';
-        if (maxVal > minVal) {
-          const topY = bar1 ? Math.min(bar0.y, bar1.y) - 6 : bar0.y - 6;
-          ctx.fillText(`${minVal}–${maxVal}`, xPos, topY);
-        } else if (minVal > 0) {
-          ctx.fillText(`${minVal}`, xPos, bar0.y - 6);
-        }
+        const topY = (bar1 && maxVal > minVal) ? Math.min(bar0.y, bar1.y) - 6 : bar0.y - 6;
+        ctx.fillText(maxVal > minVal ? `${minVal}–${maxVal}` : `${minVal}`, bar0.x, topY);
         ctx.restore();
       });
     }
@@ -300,11 +278,8 @@
       },
       options: {
         responsive: true, maintainAspectRatio: false,
-        layout: { padding: { top: 24 } },
-        plugins: {
-          legend: { display: false },
-          tooltip: { callbacks: { label: (ctx) => ctx.datasetIndex === 0 ? ` Confirmé : ${ctx.raw}` : ` Fourchette haute : +${ctx.raw}` } }
-        },
+        layout: { padding: { top: 28 } },
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => ctx.datasetIndex === 0 ? ` Confirmé : ${ctx.raw}` : ` Fourchette haute : +${ctx.raw}` } } },
         scales: {
           x: { stacked: true, ticks: { font: { family: 'Space Grotesk', size: 12 }, color: '#666' }, grid: { display: false }, border: { display: false } },
           y: { stacked: true, display: false, beginAtZero: true }
@@ -318,30 +293,23 @@
     const countVal = document.getElementById('sel-count').value;
     const lodging = document.getElementById('sel-lodging').value;
     if (!name || !countVal || !lodging) { alert('Remplis tout !'); return; }
-
     const [minStr, maxStr] = countVal.split(':');
-    const countMin = parseInt(minStr);
-    const countMax = parseInt(maxStr);
-
+    const countMin = parseInt(minStr), countMax = parseInt(maxStr);
     const companions = [];
     for (let i = 0; i < countMax - 1; i++) {
       const input = document.getElementById(`companion-${i}`);
       if (input) companions.push(input.value.trim());
     }
-
     const entry = { name, countMin, countMax, lodging, uncertain: countMin !== countMax, companions };
     const existing = responses.findIndex(r => r.name === name);
     if (existing >= 0) responses[existing] = entry;
     else responses.push(entry);
-
     saveToStorage();
-
     document.getElementById('sel-name').value = '';
     document.getElementById('sel-count').value = '';
     document.getElementById('sel-lodging').value = '';
     document.getElementById('companions-section').style.display = 'none';
     document.getElementById('companions-grid').innerHTML = '';
-
     const msg = document.getElementById('success-msg');
     msg.style.display = 'block';
     setTimeout(() => msg.style.display = 'none', 2500);
@@ -359,16 +327,14 @@
       else { abMin += r.countMin; abMax += r.countMax; abEntries.push(r); }
     });
 
-    const hasUncertain = totalMin !== totalMax;
-    document.getElementById('total-people').textContent = hasUncertain ? `${totalMin}–${totalMax}` : totalMin;
-    document.getElementById('total-gp').textContent = gpMin !== gpMax ? `${gpMin}–${gpMax}` : gpMin;
-    document.getElementById('total-ab').textContent = abMin !== abMax ? `${abMin}–${abMax}` : abMin;
+    document.getElementById('total-people').textContent = totalMin === totalMax ? totalMin : `${totalMin}–${totalMax}`;
+    document.getElementById('label-total').textContent = totalMin <= 1 && totalMax <= 1 ? 'personne au total' : 'personnes au total';
 
-    const note = document.getElementById('range-note');
-    if (hasUncertain) {
-      note.style.display = 'block';
-      note.textContent = `Entre ${totalMin} personnes confirmées et ${totalMax} au maximum selon les incertitudes`;
-    } else { note.style.display = 'none'; }
+    document.getElementById('total-gp').textContent = gpMin === gpMax ? gpMin : `${gpMin}–${gpMax}`;
+    document.getElementById('label-gp').textContent = 'personnes chez les grands-parents';
+
+    document.getElementById('total-ab').textContent = abMin === abMax ? abMin : `${abMin}–${abMax}`;
+    document.getElementById('label-ab').textContent = "personnes à l'airbnb";
 
     barChart.data.datasets[0].data = [gpMin, abMin];
     barChart.data.datasets[1].data = [gpMax - gpMin, abMax - abMin];
