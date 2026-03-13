@@ -416,7 +416,7 @@
       return allNames.map((n, idx) => {
         const isOptional = idx >= r.countMin;
         const classes = isOptional ? `name-tag ${cls} uncertain` : `name-tag ${cls}`;
-        return `<span class="${classes}">${isOptional ? n + ' ?' : n}</span>`;
+        return `<span class="${classes}">${n}</span>`;
       }).join('');
     };
 
