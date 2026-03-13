@@ -11,8 +11,10 @@
     :root {
       --teal: #00beb5;
       --green: #00e07e;
+      --orange: #ff8c42;
       --teal-light: rgba(0,190,181,0.08);
       --green-light: rgba(0,224,126,0.10);
+      --orange-light: rgba(255,140,66,0.10);
       --radius: 12px;
       --bg: #eaf2f2;
     }
@@ -53,20 +55,23 @@
     .success-msg { font-size: 12px; color: #00a060; margin-top: 6px; text-align: center; display: none; font-weight: 500; }
     .error-msg { font-size: 12px; color: #e05050; margin-top: 6px; text-align: center; display: none; font-weight: 500; }
 
-    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1rem; }
+    /* 4 metric boxes: total + 3 lodgings */
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 1rem; }
+    .metrics .metric.total { grid-column: auto; }
     .metric { border-radius: 10px; padding: 0.75rem 0.5rem; text-align: center; border: 1px solid rgba(0,190,181,0.15); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
     .metric.total { background: linear-gradient(135deg, rgba(0,190,181,0.10), rgba(0,224,126,0.08)); }
     .metric.gp { background: var(--teal-light); }
     .metric.ab { background: var(--green-light); }
-    .metric-val { font-weight: 600; color: #1a2e2d; line-height: 1.1; }
-    .metric-val.is-number { font-size: 24px; }
+    .metric.home { background: var(--orange-light); }
+    /* Uniform font size for all metric values */
+    .metric-val { font-weight: 600; color: #1a2e2d; line-height: 1.1; font-size: 22px; }
     .metric-val.is-range { font-size: 13px; }
     .metric.total .metric-val { background: linear-gradient(90deg, var(--teal), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .metric-label { font-size: 9px; color: #6b8080; line-height: 1.3; text-align: center; }
 
     .chart-card { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; }
     .chart-card-title { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6b8080; margin-bottom: 0.5rem; }
-    .chart-wrap { position: relative; width: 100%; height: 160px; }
+    .chart-wrap { position: relative; width: 100%; height: 180px; }
     .legend { display: flex; gap: 8px; font-size: 9px; color: #9bb0b0; margin-top: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
     .legend-item { display: flex; align-items: center; gap: 3px; }
     .dot { display: inline-block; width: 7px; height: 7px; border-radius: 2px; flex-shrink: 0; }
@@ -75,15 +80,19 @@
     .name-box { background: #fff; border-radius: var(--radius); padding: 0.85rem; }
     .name-box.gp { border: 1px solid rgba(0,190,181,0.25); }
     .name-box.ab { border: 1px solid rgba(0,224,126,0.3); }
+    .name-box.home { border: 1px solid rgba(255,140,66,0.3); }
     .name-box-title { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
     .name-box.gp .name-box-title { color: var(--teal); }
     .name-box.ab .name-box-title { color: #00a060; }
+    .name-box.home .name-box-title { color: #d4682a; }
     .name-tag { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 12px; font-weight: 500; margin: 2px; }
     .name-tag.gp { background: var(--teal-light); color: #00857e; }
     .name-tag.ab { background: var(--green-light); color: #007a45; }
+    .name-tag.home { background: var(--orange-light); color: #b85a1a; }
     .name-tag.uncertain { opacity: 0.65; border-style: dashed; border-width: 1px; background: transparent; }
     .name-tag.uncertain.gp { border-color: #00857e; }
     .name-tag.uncertain.ab { border-color: #007a45; }
+    .name-tag.uncertain.home { border-color: #b85a1a; }
     .empty-msg { font-size: 11px; color: #6b8080; font-style: italic; }
     .sync-status { font-size: 10px; color: #6b8080; text-align: right; margin-bottom: 8px; }
     .sync-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); margin-right: 3px; }
@@ -182,6 +191,10 @@
       <div class="metric-val is-number" id="total-ab" style="color: #00a060;">0</div>
       <div class="metric-label">à l'airbnb</div>
     </div>
+    <div class="metric home">
+      <div class="metric-val is-number" id="total-home" style="color: #d4682a;">0</div>
+      <div class="metric-label">chez soi</div>
+    </div>
   </div>
 
   <div class="chart-card">
@@ -192,6 +205,8 @@
       <span class="legend-item"><span class="dot" style="background:rgba(0,190,181,0.3); border:1px dashed rgba(0,190,181,0.6);"></span>Fourchette haute</span>
       <span class="legend-item"><span class="dot" style="background:var(--green)"></span>Airbnb (confirmé)</span>
       <span class="legend-item"><span class="dot" style="background:rgba(0,224,126,0.3); border:1px dashed rgba(0,224,126,0.7);"></span>Fourchette haute</span>
+      <span class="legend-item"><span class="dot" style="background:var(--orange)"></span>Chez soi (confirmé)</span>
+      <span class="legend-item"><span class="dot" style="background:rgba(255,140,66,0.3); border:1px dashed rgba(255,140,66,0.7);"></span>Fourchette haute</span>
     </div>
   </div>
 
@@ -204,6 +219,10 @@
       <div class="name-box-title">Airbnb</div>
       <div id="names-ab"><span class="empty-msg">Personne pour l'instant</span></div>
     </div>
+    <div class="name-box home">
+      <div class="name-box-title">Chez soi</div>
+      <div id="names-home"><span class="empty-msg">Personne pour l'instant</span></div>
+    </div>
   </div>
 
   <div class="footer">Les réponses sont sauvegardées pour tout le monde.</div>
@@ -214,7 +233,7 @@
 
   let responses = [];
   let barChart;
-  let gpMin = 0, gpMax = 0, abMin = 0, abMax = 0;
+  let gpMin = 0, gpMax = 0, abMin = 0, abMax = 0, homeMin = 0, homeMax = 0;
 
   function onCountChange() {
     const val = document.getElementById('sel-count').value;
@@ -238,8 +257,8 @@
     id: 'stackedLabel',
     afterDatasetsDraw(chart) {
       const { ctx } = chart;
-      const mins = [gpMin, abMin];
-      const maxs = [gpMax, abMax];
+      const mins = [gpMin, abMin, homeMin];
+      const maxs = [gpMax, abMax, homeMax];
       chart.data.labels.forEach((label, i) => {
         const meta0 = chart.getDatasetMeta(0);
         const meta1 = chart.getDatasetMeta(1);
@@ -265,10 +284,10 @@
       type: 'bar',
       plugins: [stackedLabelPlugin],
       data: {
-        labels: ['Maison des grands-parents', 'Airbnb'],
+        labels: ['Grands-parents', 'Airbnb', 'Chez soi'],
         datasets: [
-          { label: 'Confirmé', data: [0,0], backgroundColor: ['#00beb5','#00e07e'], borderRadius: 5, borderSkipped: false, barPercentage: 0.5, categoryPercentage: 0.6 },
-          { label: 'Fourchette haute', data: [0,0], backgroundColor: ['rgba(0,190,181,0.22)','rgba(0,224,126,0.22)'], borderColor: ['rgba(0,190,181,0.55)','rgba(0,224,126,0.6)'], borderWidth: { top: 1.5, left: 0, right: 0, bottom: 0 }, borderRadius: 5, borderSkipped: false, barPercentage: 0.5, categoryPercentage: 0.6 }
+          { label: 'Confirmé', data: [0, 0, 0], backgroundColor: ['#00beb5', '#00e07e', '#ff8c42'], borderRadius: 5, borderSkipped: false, barPercentage: 0.5, categoryPercentage: 0.6 },
+          { label: 'Fourchette haute', data: [0, 0, 0], backgroundColor: ['rgba(0,190,181,0.22)', 'rgba(0,224,126,0.22)', 'rgba(255,140,66,0.22)'], borderColor: ['rgba(0,190,181,0.55)', 'rgba(0,224,126,0.6)', 'rgba(255,140,66,0.7)'], borderWidth: { top: 1.5, left: 0, right: 0, bottom: 0 }, borderRadius: 5, borderSkipped: false, barPercentage: 0.5, categoryPercentage: 0.6 }
         ]
       },
       options: {
@@ -361,13 +380,14 @@
 
   function updateDashboard() {
     let totalMin = 0, totalMax = 0;
-    gpMin = 0; gpMax = 0; abMin = 0; abMax = 0;
-    let gpEntries = [], abEntries = [];
+    gpMin = 0; gpMax = 0; abMin = 0; abMax = 0; homeMin = 0; homeMax = 0;
+    let gpEntries = [], abEntries = [], homeEntries = [];
 
     responses.forEach(r => {
       totalMin += r.countMin; totalMax += r.countMax;
       if (r.lodging === 'gp') { gpMin += r.countMin; gpMax += r.countMax; gpEntries.push(r); }
       else if (r.lodging === 'ab') { abMin += r.countMin; abMax += r.countMax; abEntries.push(r); }
+      else if (r.lodging === 'home') { homeMin += r.countMin; homeMax += r.countMax; homeEntries.push(r); }
     });
 
     const elTotal = document.getElementById('total-people');
@@ -381,9 +401,10 @@
 
     setMetric('total-gp', gpMin, gpMax);
     setMetric('total-ab', abMin, abMax);
+    setMetric('total-home', homeMin, homeMax);
 
-    barChart.data.datasets[0].data = [gpMin, abMin];
-    barChart.data.datasets[1].data = [gpMax - gpMin, abMax - abMin];
+    barChart.data.datasets[0].data = [gpMin, abMin, homeMin];
+    barChart.data.datasets[1].data = [gpMax - gpMin, abMax - abMin, homeMax - homeMin];
     barChart.update();
 
     const renderEntry = (r, cls) => {
@@ -401,6 +422,7 @@
 
     document.getElementById('names-gp').innerHTML = render(gpEntries, 'gp');
     document.getElementById('names-ab').innerHTML = render(abEntries, 'ab');
+    document.getElementById('names-home').innerHTML = render(homeEntries, 'home');
   }
 
   initChart();
