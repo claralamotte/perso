@@ -156,6 +156,12 @@
             <option value="1:3">Entre 1 et 3</option>
             <option value="2:4">Entre 2 et 4</option>
           </optgroup>
+          <optgroup label="Pas sûr·e de venir">
+            <option value="0:1">Peut-être 1</option>
+            <option value="0:2">Peut-être 2</option>
+            <option value="0:3">Peut-être 3</option>
+            <option value="0:4">Peut-être 4</option>
+          </optgroup>
         </select>
       </div>
       <div class="field">
@@ -244,15 +250,26 @@
     const section = document.getElementById('companions-section');
     const grid = document.getElementById('companions-grid');
     if (!val) { section.style.display = 'none'; return; }
-    const countMax = parseInt(val.split(':')[1]);
+    const [minStr2, maxStr2] = val.split(':');
+    const countMin2 = parseInt(minStr2);
+    const countMax = parseInt(maxStr2);
     const totalFields = countMax - 1;
-    if (totalFields <= 0) { section.style.display = 'none'; return; }
+    if (totalFields <= 0 && countMin2 > 0) { section.style.display = 'none'; return; }
     grid.innerHTML = '';
-    for (let i = 0; i < totalFields; i++) {
-      const div = document.createElement('div');
-      div.className = 'field';
-      div.innerHTML = `<label>Personne ${i + 2}</label><input type="text" id="companion-${i}" placeholder="Prénom..." autocomplete="off" />`;
-      grid.appendChild(div);
+    if (countMin2 === 0) {
+      for (let i = 0; i < countMax; i++) {
+        const div = document.createElement('div');
+        div.className = 'field';
+        div.innerHTML = `<label>Personne ${i + 1} (éventuelle)</label><input type="text" id="companion-${i}" placeholder="Prénom..." autocomplete="off" />`;
+        grid.appendChild(div);
+      }
+    } else {
+      for (let i = 0; i < totalFields; i++) {
+        const div = document.createElement('div');
+        div.className = 'field';
+        div.innerHTML = `<label>Personne ${i + 2}</label><input type="text" id="companion-${i}" placeholder="Prénom..." autocomplete="off" />`;
+        grid.appendChild(div);
+      }
     }
     section.style.display = 'block';
   }
@@ -332,7 +349,8 @@
     const [minStr, maxStr] = countVal.split(':');
     const countMin = parseInt(minStr), countMax = parseInt(maxStr);
     const companions = [];
-    for (let i = 0; i < countMax - 1; i++) {
+    const companionCount = countMin === 0 ? countMax : countMax - 1;
+    for (let i = 0; i < companionCount; i++) {
       const input = document.getElementById(`companion-${i}`);
       if (input && input.value.trim()) companions.push(input.value.trim());
     }
