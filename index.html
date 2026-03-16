@@ -430,7 +430,9 @@
     barChart.update();
 
     const renderEntry = (r, cls) => {
-      const allNames = [r.name, ...(r.companions || []).filter(c => c)];
+      const allNames = r.countMin === 0
+        ? (r.companions || []).filter(c => c)
+        : [r.name, ...(r.companions || []).filter(c => c)];
       return allNames.map((n, idx) => {
         const isOptional = idx >= r.countMin;
         const classes = isOptional ? `name-tag ${cls} uncertain` : `name-tag ${cls}`;
