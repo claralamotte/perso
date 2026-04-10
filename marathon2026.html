@@ -5,170 +5,101 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#ED0B5E">
 <meta property="og:title" content="Marathon de Paris 2026 - Pace Tracker">
-<meta property="og:description" content="Calcule tes horaires de passage sur le parcours du Marathon de Paris 2026. Entre ton objectif ou ton allure et visualise tes splits.">
+<meta property="og:description" content="Calcule tes horaires de passage sur le parcours du Marathon de Paris 2026.">
 <title>Marathon de Paris 2026 - Pace Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --pink:#ED0B5E;--pink-light:#FDE8EF;--pink-soft:rgba(237,11,94,0.08);
-  --green:#3DCD58;--green-light:#E6F9EA;
-  --bg:#F7F7F8;--card:#FFFFFF;--text:#111;--muted:#777;--subtle:#E4E4E7;--faint:#F1F1F3;
-}
-html{scroll-behavior:smooth}
-body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+:root{--pink:#ED0B5E;--pink-light:#FDE8EF;--pink-glass:rgba(237,11,94,0.1);--green:#3DCD58;--green-light:#E6F9EA;--green-glass:rgba(61,205,88,0.06);--bg:#F7F7F8;--card:#FFFFFF;--text:#111;--muted:#777;--subtle:#E4E4E7;--faint:#F1F1F3}
+html{scroll-behavior:smooth}body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
 .app{max-width:460px;margin:0 auto;padding:0 16px 60px}
-.hero{text-align:center;padding:40px 0 32px;position:relative}
-.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:40px;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--green),var(--pink))}
-.hero-badge{display:inline-block;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--pink);background:var(--pink-light);padding:5px 14px;border-radius:20px;font-weight:600;margin-bottom:14px}
-.hero h1{font-size:26px;font-weight:700;letter-spacing:-0.5px;line-height:1.15}
-.hero h1 span{color:var(--pink)}
-.hero-info{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
-.controls{background:var(--card);border-radius:20px;padding:22px 20px;margin-bottom:28px;border:1px solid var(--subtle);box-shadow:0 1px 3px rgba(0,0,0,0.03)}
-.field{margin-bottom:18px}.field:last-child{margin-bottom:0}
-.field-label{display:block;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
-.field input[type="time"],.field input[type="text"]{width:100%;padding:12px 16px;border:1.5px solid var(--subtle);border-radius:12px;font-family:'DM Mono',monospace;font-size:17px;color:var(--text);background:var(--faint);outline:none;text-align:center;transition:border-color 0.2s,box-shadow 0.2s;-webkit-appearance:none}
-.field input:focus{border-color:var(--pink);box-shadow:0 0 0 3px var(--pink-soft);background:var(--card)}
-.toggle{display:flex;background:var(--faint);border-radius:12px;padding:3px;margin-bottom:18px}
-.toggle button{flex:1;padding:10px 0;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--muted);border-radius:10px;cursor:pointer;transition:all 0.25s ease}
-.toggle button.on{background:var(--pink);color:#fff;box-shadow:0 2px 8px rgba(237,11,94,0.25)}
+.hero{text-align:center;padding:40px 0 28px;position:relative}.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:40px;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--green),var(--pink))}.hero-badge{display:inline-block;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--pink);background:var(--pink-glass);padding:5px 14px;border-radius:20px;font-weight:600;margin-bottom:14px}.hero h1{font-size:26px;font-weight:700;letter-spacing:-0.5px;line-height:1.15;color:var(--green)}.hero-info{font-size:13px;color:var(--muted);margin-top:8px}
+.controls{background:var(--card);border-radius:20px;padding:22px 20px;margin-bottom:24px;border:1px solid var(--subtle);box-shadow:0 1px 3px rgba(0,0,0,0.03)}.field{margin-bottom:18px}.field:last-child{margin-bottom:0}.field-label{display:block;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.time-row{display:flex;align-items:flex-start;justify-content:center;gap:6px}.time-col{display:flex;flex-direction:column;align-items:center}.time-box{width:72px;height:56px;border:none;border-radius:14px;background:var(--green-glass);font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:var(--green);text-align:center;outline:none;transition:background 0.2s;-webkit-appearance:none;-moz-appearance:textfield;padding:0}.time-box:focus{background:rgba(61,205,88,0.1)}.time-box::placeholder{color:rgba(61,205,88,0.35)}.time-sep-col{display:flex;align-items:center;height:56px}.time-sep{font-family:'DM Mono',monospace;font-size:26px;font-weight:600;color:var(--green);opacity:0.4}.time-unit{font-size:11px;font-weight:500;color:var(--muted);text-align:center;margin-top:4px}
+.chips{display:flex;gap:8px;justify-content:center;margin-bottom:18px}.chip{padding:9px 24px;border:none;border-radius:24px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.25s ease;letter-spacing:0.3px}.chip.active{background:var(--pink);color:#fff;box-shadow:0 2px 10px rgba(237,11,94,0.3)}.chip.inactive{background:var(--pink-glass);color:var(--pink)}
+.map-wrap{background:var(--card);border-radius:20px;margin-bottom:24px;border:1px solid var(--subtle);box-shadow:0 1px 3px rgba(0,0,0,0.03);overflow:hidden}
+.map-title{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:14px 16px 8px}
+#map{width:100%;height:260px}
+#map .leaflet-tile{filter:saturate(0) brightness(1.25) contrast(0.7)!important}
+.leaflet-popup-content-wrapper{border-radius:10px!important;font-family:'DM Sans',sans-serif!important;box-shadow:0 2px 12px rgba(0,0,0,0.15)!important}
+.leaflet-popup-content{margin:10px 14px!important;font-size:13px!important;line-height:1.4!important}
+.popup-name{font-weight:600;font-size:14px;margin-bottom:2px}.popup-km{color:#777;font-size:11px}.popup-time{font-family:'DM Mono',monospace;font-size:16px;font-weight:600;color:#ED0B5E;margin-top:4px}.popup-time.green{color:#3DCD58}
 .section-label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
-.timeline{position:relative;padding:0 0 0 36px;margin-bottom:28px}
-.tl-line{position:absolute;left:15px;top:8px;bottom:8px;width:2.5px;border-radius:2px;background:linear-gradient(to bottom,var(--green) 0%,var(--green) 6%,var(--subtle) 6%,var(--subtle) 94%,var(--pink) 94%,var(--pink) 100%)}
-.stop{position:relative;padding:13px 0}
-.stop+.stop{border-top:1px solid var(--faint)}
-.stop-dot{position:absolute;left:-28px;top:17px;width:11px;height:11px;border-radius:50%;border:2.5px solid var(--subtle);background:var(--card);z-index:2}
-.stop.is-start .stop-dot{background:var(--green);border-color:var(--green);box-shadow:0 0 0 3px var(--green-light)}
-.stop.is-finish .stop-dot{background:var(--pink);border-color:var(--pink);box-shadow:0 0 0 3px var(--pink-light)}
-.stop.is-half .stop-dot{border-color:var(--pink);background:var(--pink-light)}
-.stop-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.stop-name{font-size:14px;font-weight:600;line-height:1.3}
-.stop-detail{font-size:11px;color:var(--muted);margin-top:1px}
-.stop-clock{font-family:'DM Mono',monospace;font-size:15px;font-weight:500;color:var(--pink);white-space:nowrap;background:var(--pink-light);padding:4px 10px;border-radius:8px}
-.stop.is-start .stop-clock{color:var(--green);background:var(--green-light)}
-.recap{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
-.recap-card{background:var(--card);border:1px solid var(--subtle);border-radius:14px;padding:14px 8px;text-align:center}
-.recap-label{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
-.recap-val{font-family:'DM Mono',monospace;font-size:16px;font-weight:500}
-.share-bar{display:flex;gap:10px;margin-top:8px}
-.share-bar button{flex:1;padding:13px 0;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:transform 0.1s,opacity 0.2s}
-.share-bar button:active{transform:scale(0.97)}
-.btn-copy{background:var(--faint);color:var(--text);border:1px solid var(--subtle)}
-.btn-share{background:var(--pink);color:#fff}
+.timeline{position:relative;padding:0 0 0 36px;margin-bottom:28px}.tl-line{position:absolute;left:15px;top:8px;bottom:8px;width:2.5px;border-radius:2px;background:linear-gradient(to bottom,var(--green) 0%,var(--green) 6%,var(--subtle) 6%,var(--subtle) 94%,var(--pink) 94%,var(--pink) 100%)}
+.stop{position:relative;padding:13px 0;cursor:pointer;transition:background 0.15s;border-radius:8px}.stop:active{background:var(--faint)}.stop+.stop{border-top:1px solid var(--faint)}.stop-dot{position:absolute;left:-28px;top:17px;width:11px;height:11px;border-radius:50%;border:2.5px solid var(--subtle);background:var(--card);z-index:2}.stop.is-start .stop-dot{background:var(--green);border-color:var(--green);box-shadow:0 0 0 3px var(--green-light)}.stop.is-finish .stop-dot{background:var(--pink);border-color:var(--pink);box-shadow:0 0 0 3px var(--pink-light)}.stop.is-half .stop-dot{border-color:var(--pink);background:var(--pink-light)}.stop.active-poi .stop-dot{border-color:var(--pink);box-shadow:0 0 0 4px var(--pink-light)}
+.stop-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.stop-name{font-size:14px;font-weight:600;line-height:1.3}.stop-detail{font-size:11px;color:var(--muted);margin-top:1px}.stop-clock{font-family:'DM Mono',monospace;font-size:15px;font-weight:500;color:var(--pink);white-space:nowrap;background:var(--pink-light);padding:4px 10px;border-radius:8px}.stop.is-start .stop-clock{color:var(--green);background:var(--green-light)}
+.recap{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}.recap-card{background:var(--card);border:1px solid var(--subtle);border-radius:14px;padding:14px 8px;text-align:center}.recap-label{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}.recap-val{font-family:'DM Mono',monospace;font-size:16px;font-weight:500}
+.share-bar{display:flex;gap:10px;margin-top:8px}.share-bar button{flex:1;padding:13px 0;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:transform 0.1s}.share-bar button:active{transform:scale(0.97)}.btn-copy{background:var(--faint);color:var(--text);border:1px solid var(--subtle)}.btn-share{background:var(--pink);color:#fff}
 .footer{text-align:center;margin-top:28px;font-size:10px;color:var(--muted);letter-spacing:0.3px;line-height:1.6}
-.error-msg{color:var(--muted);font-size:13px;padding:20px 0;text-align:center}
-@media(max-width:360px){.hero h1{font-size:22px}.recap-val{font-size:14px}}
+@media(max-width:360px){.hero h1{font-size:22px}.recap-val{font-size:14px}.time-box{width:62px;height:50px;font-size:22px}.time-sep{font-size:22px}.chip{padding:8px 18px;font-size:12px}}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="hero">
-    <div class="hero-badge">12 avril 2026</div>
-    <h1>Marathon <span>de Paris</span></h1>
-    <div class="hero-info">Schneider Electric &middot; 42,195 km</div>
-  </div>
+  <div class="hero"><div class="hero-badge">12 avril 2026</div><h1>Marathon de Paris</h1><div class="hero-info">Schneider Electric &#183; 42,195 km</div></div>
   <div class="controls">
-    <div class="field">
-      <label class="field-label">Heure de depart</label>
-      <input type="time" id="startTime" value="08:30">
-    </div>
-    <div class="toggle" id="modeToggle">
-      <button class="on" data-m="obj">Objectif</button>
-      <button data-m="pace">Allure</button>
-    </div>
-    <div class="field" id="objField">
-      <label class="field-label">Temps cible (h:mm:ss)</label>
-      <input type="text" id="objInput" value="3:45:00" placeholder="3:45:00" inputmode="numeric">
-    </div>
-    <div class="field" id="paceField" style="display:none">
-      <label class="field-label">Allure (min:sec / km)</label>
-      <input type="text" id="paceInput" value="5:20" placeholder="5:20" inputmode="numeric">
-    </div>
+    <div class="field"><label class="field-label">Heure de depart</label><div class="time-row"><div class="time-col"><input class="time-box" type="text" id="startH" value="08" maxlength="2" placeholder="08" inputmode="numeric"><div class="time-unit">h</div></div><div class="time-sep-col"><span class="time-sep">:</span></div><div class="time-col"><input class="time-box" type="text" id="startM" value="30" maxlength="2" placeholder="30" inputmode="numeric"><div class="time-unit">min</div></div></div></div>
+    <div class="chips" id="modeChips"><button class="chip active" data-m="obj">Objectif</button><button class="chip inactive" data-m="pace">Allure</button></div>
+    <div class="field" id="objField"><label class="field-label">Temps cible</label><div class="time-row"><div class="time-col"><input class="time-box" type="text" id="objH" value="3" maxlength="2" placeholder="3" inputmode="numeric"><div class="time-unit">h</div></div><div class="time-sep-col"><span class="time-sep">:</span></div><div class="time-col"><input class="time-box" type="text" id="objM" value="45" maxlength="2" placeholder="45" inputmode="numeric"><div class="time-unit">min</div></div></div></div>
+    <div class="field" id="paceField" style="display:none"><label class="field-label">Allure</label><div class="time-row"><div class="time-col"><input class="time-box" type="text" id="paceMin" value="5" maxlength="2" placeholder="5" inputmode="numeric"><div class="time-unit">min</div></div><div class="time-sep-col"><span class="time-sep">:</span></div><div class="time-col"><input class="time-box" type="text" id="paceSec" value="20" maxlength="2" placeholder="20" inputmode="numeric"><div class="time-unit">sec</div></div><div class="time-sep-col"><span style="font-size:13px;color:var(--muted);margin-left:4px">/km</span></div></div></div>
   </div>
-  <div class="section-label">Parcours &amp; horaires de passage</div>
+  <div class="map-wrap"><div class="map-title">Parcours</div><div id="map"></div></div>
+  <div class="section-label">Detail des passages</div>
   <div class="timeline" id="timeline"><div class="tl-line"></div></div>
   <div class="recap" id="recap"></div>
-  <div class="share-bar">
-    <button class="btn-copy" id="copyBtn">Copier mes splits</button>
-    <button class="btn-share" id="shareBtn">Partager</button>
-  </div>
+  <div class="share-bar"><button class="btn-copy" id="copyBtn">Copier mes splits</button><button class="btn-share" id="shareBtn">Partager</button></div>
   <div class="footer">Parcours sous reserve de validation officielle<br>Calcul base sur une allure constante</div>
 </div>
 <script>
-const POI=[
-  {name:"Champs-Elysees",km:0,type:"start",detail:"Depart"},
-  {name:"Palais Garnier",km:2.5},
-  {name:"Carrousel du Louvre",km:4.5},
-  {name:"Place de la Bastille",km:6,detail:"1er passage"},
-  {name:"Place de la Nation",km:9},
-  {name:"Chateau de Vincennes",km:12},
-  {name:"Semi (21,1 km)",km:21.0975,type:"half",detail:"Mi-parcours"},
-  {name:"Place de la Bastille",km:25,detail:"2e passage"},
-  {name:"Notre-Dame",km:27},
-  {name:"Tour Eiffel",km:32,detail:"Av. de New York / Kennedy"},
-  {name:"Porte d'Auteuil",km:36},
-  {name:"Avenue Foch",km:42.195,type:"finish",detail:"Arrivee"}
-];
-let mode="obj";
-function parseDur(s){const p=s.replace(/\s/g,"").split(":").map(Number);if(p.some(isNaN))return NaN;if(p.length===3)return p[0]*3600+p[1]*60+p[2];if(p.length===2)return p[0]*60+p[1];return NaN}
-function fmtDur(sec){const h=Math.floor(sec/3600);const m=Math.floor((sec%3600)/60);const s=Math.round(sec%60);return(h>0?h+":":"")+String(m).padStart(h>0?2:1,"0")+":"+String(s).padStart(2,"0")}
-function fmtClock(sec){let h=Math.floor(sec/3600)%24;let m=Math.floor((sec%3600)/60);return String(h).padStart(2,"0")+"h"+String(m).padStart(2,"0")}
-function getPace(){if(mode==="obj"){const t=parseDur(document.getElementById("objInput").value);return(isNaN(t)||t<=0)?NaN:t/42.195}const t=parseDur(document.getElementById("paceInput").value);return isNaN(t)?NaN:t}
-
-function render(){
-  const sp=document.getElementById("startTime").value.split(":").map(Number);
-  const startSec=sp[0]*3600+(sp[1]||0)*60;
-  const pace=getPace();
-  const tl=document.getElementById("timeline");
-  const rc=document.getElementById("recap");
-  if(isNaN(pace)||pace<=0){tl.innerHTML='<div class="tl-line"></div><p class="error-msg">Renseignez un objectif ou une allure valide</p>';rc.innerHTML="";return}
-  const totalSec=pace*42.195;
-  let html='<div class="tl-line"></div>';
-  POI.forEach(p=>{
-    const elapsed=pace*p.km;const clock=startSec+elapsed;
-    let cls="stop";if(p.type==="start")cls+=" is-start";if(p.type==="finish")cls+=" is-finish";if(p.type==="half")cls+=" is-half";
-    const kmLabel=p.km===42.195?"42,195 km":p.km===21.0975?"21,1 km":p.km+" km";
-    const detailStr=p.detail?p.detail+" \u00B7 "+kmLabel:kmLabel;
-    html+='<div class="'+cls+'"><div class="stop-dot"></div><div class="stop-row"><div><div class="stop-name">'+p.name+'</div><div class="stop-detail">'+detailStr+'</div></div><div class="stop-clock">'+fmtClock(clock)+'</div></div></div>';
+var POI=[{name:"Champs-Elysees",km:0,type:"start",detail:"Depart",lat:48.8698,lon:2.3076},{name:"Palais Garnier",km:2.5,lat:48.8720,lon:2.3316},{name:"Carrousel du Louvre",km:4.5,lat:48.8620,lon:2.3333},{name:"Bastille",km:6,detail:"1er passage",lat:48.8533,lon:2.3693},{name:"Nation",km:9,lat:48.8500,lon:2.3960},{name:"Ch. de Vincennes",km:12,lat:48.8424,lon:2.4347},{name:"Semi",km:21.0975,type:"half",detail:"21,1 km",lat:48.8280,lon:2.4250},{name:"Bastille",km:25,detail:"2e passage",lat:48.8540,lon:2.3700},{name:"Notre-Dame",km:27,lat:48.8565,lon:2.3500},{name:"Tour Eiffel",km:32,detail:"Quais rive droite",lat:48.8630,lon:2.2945},{name:"Pte d'Auteuil",km:36,lat:48.8470,lon:2.2580},{name:"Avenue Foch",km:42.195,type:"finish",detail:"Arrivee",lat:48.8738,lon:2.2850}];
+var ROUTE=[[48.8698,2.3076],[48.8685,2.3110],[48.8670,2.3150],[48.8662,2.3180],[48.8656,2.3211],[48.8660,2.3235],[48.8670,2.3260],[48.8682,2.3278],[48.8700,2.3295],[48.8712,2.3308],[48.8720,2.3316],[48.8712,2.3314],[48.8700,2.3310],[48.8685,2.3302],[48.8670,2.3295],[48.8655,2.3300],[48.8640,2.3310],[48.8630,2.3320],[48.8620,2.3333],[48.8612,2.3370],[48.8600,2.3420],[48.8592,2.3475],[48.8580,2.3530],[48.8572,2.3575],[48.8560,2.3620],[48.8548,2.3655],[48.8533,2.3693],[48.8528,2.3740],[48.8520,2.3790],[48.8512,2.3870],[48.8500,2.3960],[48.8482,2.3990],[48.8460,2.4020],[48.8435,2.4055],[48.8400,2.4100],[48.8392,2.4145],[48.8380,2.4200],[48.8395,2.4270],[48.8424,2.4347],[48.8445,2.4425],[48.8460,2.4500],[48.8435,2.4518],[48.8390,2.4520],[48.8358,2.4470],[48.8320,2.4400],[48.8298,2.4330],[48.8280,2.4250],[48.8290,2.4185],[48.8310,2.4120],[48.8332,2.4070],[48.8360,2.4020],[48.8378,2.3970],[48.8400,2.3920],[48.8418,2.3875],[48.8440,2.3830],[48.8468,2.3795],[48.8500,2.3760],[48.8518,2.3732],[48.8540,2.3700],[48.8552,2.3642],[48.8565,2.3580],[48.8568,2.3540],[48.8565,2.3500],[48.8572,2.3450],[48.8580,2.3400],[48.8590,2.3350],[48.8600,2.3300],[48.8608,2.3250],[48.8615,2.3200],[48.8618,2.3150],[48.8620,2.3100],[48.8624,2.3040],[48.8630,2.2980],[48.8632,2.2962],[48.8630,2.2945],[48.8628,2.2898],[48.8620,2.2850],[48.8608,2.2798],[48.8590,2.2740],[48.8568,2.2688],[48.8540,2.2630],[48.8508,2.2600],[48.8470,2.2580],[48.8485,2.2535],[48.8510,2.2490],[48.8532,2.2478],[48.8560,2.2470],[48.8588,2.2482],[48.8620,2.2500],[48.8638,2.2535],[48.8660,2.2580],[48.8678,2.2628],[48.8700,2.2680],[48.8712,2.2710],[48.8720,2.2740],[48.8728,2.2790],[48.8738,2.2850]];
+var mode="obj",activeIdx=-1,map,markers=[],popups=[];
+function initMap(){
+  map=L.map("map",{zoomControl:false,attributionControl:false,scrollWheelZoom:false,dragging:true,touchZoom:true});
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19}).addTo(map);
+  L.polyline(ROUTE,{color:"#ED0B5E",weight:2.5,opacity:0.85,smoothFactor:3}).addTo(map);
+  map.fitBounds(L.polyline(ROUTE).getBounds(),{padding:[8,8]});
+  var offsets=[
+    [40,28],[40,28],[40,28],  // Champs, Garnier, Louvre
+    [0,28],                    // Bastille 1 - anchor left
+    [40,28],                   // Nation
+    [40,28],                   // Vincennes
+    [40,28],                   // Semi
+    [80,0],                    // Bastille 2 - anchor right, top
+    [40,-2],                   // Notre-Dame - below
+    [40,28],                   // Tour Eiffel
+    [40,28],                   // Auteuil
+    [40,28]                    // Foch
+  ];
+  var labels=["Depart","Garnier","Louvre","Bastille","Nation","Vincennes","Semi","Bastille","Notre-Dame","Tour Eiffel","Auteuil","Arrivee"];
+  POI.forEach(function(p,i){
+    var tc=p.type==="start"?"#2BA847":"#ED0B5E";
+    var off=offsets[i]||[40,15];
+    var lbl=labels[i];
+    var icon=L.divIcon({className:"",html:'<div style="background:rgba(255,255,255,0.92);border:none;border-radius:20px;padding:3px 8px;white-space:nowrap;font-family:DM Sans,sans-serif;font-size:10px;font-weight:600;color:'+tc+';box-shadow:0 2px 6px rgba(0,0,0,0.1);cursor:pointer;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)">'+lbl+'</div>',iconSize:[null,null],iconAnchor:[off[0],off[1]]});
+    var m=L.marker([p.lat,p.lon],{icon:icon}).addTo(map);
+    var popup=L.popup({closeButton:false,offset:[0,-4]});
+    m.bindPopup(popup);m.on("click",function(){activeIdx=i;updatePopups();highlightStop(i)});
+    markers.push(m);popups.push(popup);
   });
-  tl.innerHTML=html;
-  const pm=Math.floor(pace/60);const ps=Math.round(pace%60);
-  rc.innerHTML='<div class="recap-card"><div class="recap-label">Allure</div><div class="recap-val">'+pm+':'+String(ps).padStart(2,"0")+'/km</div></div><div class="recap-card"><div class="recap-label">Temps</div><div class="recap-val">'+fmtDur(totalSec)+'</div></div><div class="recap-card"><div class="recap-label">Arrivee</div><div class="recap-val">'+fmtClock(startSec+totalSec)+'</div></div>';
 }
-
-document.querySelectorAll("#modeToggle button").forEach(function(btn){
-  btn.addEventListener("click",function(){
-    document.querySelectorAll("#modeToggle button").forEach(function(b){b.classList.remove("on")});
-    btn.classList.add("on");mode=btn.dataset.m;
-    document.getElementById("objField").style.display=mode==="obj"?"block":"none";
-    document.getElementById("paceField").style.display=mode==="pace"?"block":"none";
-    render();
-  });
-});
-document.getElementById("startTime").addEventListener("input",render);
-document.getElementById("objInput").addEventListener("input",render);
-document.getElementById("paceInput").addEventListener("input",render);
-
-document.getElementById("copyBtn").addEventListener("click",function(){
-  var self=this;var pace=getPace();if(isNaN(pace)||pace<=0)return;
-  var sp=document.getElementById("startTime").value.split(":").map(Number);
-  var startSec=sp[0]*3600+(sp[1]||0)*60;
-  var pm=Math.floor(pace/60);var ps=Math.round(pace%60);
-  var txt="Marathon de Paris 2026 - Mes splits\nAllure : "+pm+":"+String(ps).padStart(2,"0")+"/km\n\n";
-  POI.forEach(function(p){var clock=startSec+pace*p.km;var km=p.km===42.195?"42,195":p.km===21.0975?"21,1":p.km;txt+=fmtClock(clock)+"  "+p.name+" ("+km+" km)\n"});
-  navigator.clipboard.writeText(txt).then(function(){self.textContent="Copie !";setTimeout(function(){self.textContent="Copier mes splits"},1500)}).catch(function(){});
-});
-
-document.getElementById("shareBtn").addEventListener("click",function(){
-  var self=this;var pace=getPace();if(isNaN(pace)||pace<=0)return;
-  var totalSec=pace*42.195;
-  var text="Marathon de Paris 2026 - Mon objectif : "+fmtDur(totalSec)+" ! Calcule tes horaires de passage ici :";
-  if(navigator.share){navigator.share({title:"Marathon de Paris 2026",text:text,url:window.location.href}).catch(function(){})}
-  else{navigator.clipboard.writeText(text+" "+window.location.href).then(function(){self.textContent="Lien copie !";setTimeout(function(){self.textContent="Partager"},1500)}).catch(function(){})}
-});
-
-render();
+function updatePopups(){var pace=getPace(),startSec=getStartSec();POI.forEach(function(p,i){var t=isNaN(pace)||pace<=0?"--:--":fmtClock(startSec+pace*p.km);var km=p.km===42.195?"42,195 km":p.km===21.0975?"21,1 km":p.km+" km";var cc=p.type==="start"?" green":"";var d=p.detail?p.detail+" \u00B7 "+km:km;popups[i].setContent('<div class="popup-name">'+p.name+'</div><div class="popup-km">'+d+'</div><div class="popup-time'+cc+'">'+t+'</div>')})}
+function clampInput(el,mn,mx){el.addEventListener("input",function(){this.value=this.value.replace(/[^0-9]/g,"");if(this.value.length>2)this.value=this.value.slice(0,2)});el.addEventListener("blur",function(){var v=parseInt(this.value)||0;if(v<mn)v=mn;if(v>mx)v=mx;this.value=v<10&&this.value.length>1?String(v).padStart(2,"0"):String(v);render()});el.addEventListener("focus",function(){this.select()})}
+clampInput(document.getElementById("startH"),0,23);clampInput(document.getElementById("startM"),0,59);clampInput(document.getElementById("objH"),0,9);clampInput(document.getElementById("objM"),0,59);clampInput(document.getElementById("paceMin"),2,9);clampInput(document.getElementById("paceSec"),0,59);
+function getStartSec(){return(parseInt(document.getElementById("startH").value)||0)*3600+(parseInt(document.getElementById("startM").value)||0)*60}
+function getPace(){if(mode==="obj"){var h=parseInt(document.getElementById("objH").value)||0,m=parseInt(document.getElementById("objM").value)||0,t=h*3600+m*60;return t<=0?NaN:t/42.195}var mm=parseInt(document.getElementById("paceMin").value)||0,ss=parseInt(document.getElementById("paceSec").value)||0,t=mm*60+ss;return t<=0?NaN:t}
+function fmtDur(s){var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=Math.round(s%60);return(h>0?h+":":"")+String(m).padStart(h>0?2:1,"0")+":"+String(sc).padStart(2,"0")}
+function fmtClock(s){var h=Math.floor(s/3600)%24,m=Math.floor((s%3600)/60);return String(h).padStart(2,"0")+"h"+String(m).padStart(2,"0")}
+function highlightStop(idx){document.querySelectorAll(".stop").forEach(function(el,i){el.classList.toggle("active-poi",i===idx)})}
+function render(){var startSec=getStartSec(),pace=getPace(),tl=document.getElementById("timeline"),rc=document.getElementById("recap");if(isNaN(pace)||pace<=0){tl.innerHTML='<div class="tl-line"></div><p style="color:var(--muted);font-size:13px;padding:20px 0;text-align:center">Renseignez un objectif ou une allure valide</p>';rc.innerHTML="";return}var totalSec=pace*42.195,html='<div class="tl-line"></div>';POI.forEach(function(p,i){var elapsed=pace*p.km,clock=startSec+elapsed;var cls="stop";if(p.type==="start")cls+=" is-start";if(p.type==="finish")cls+=" is-finish";if(p.type==="half")cls+=" is-half";if(i===activeIdx)cls+=" active-poi";var km=p.km===42.195?"42,195 km":p.km===21.0975?"21,1 km":p.km+" km";var d=p.detail?p.detail+" \u00B7 "+km:km;html+='<div class="'+cls+'" data-stop="'+i+'"><div class="stop-dot"></div><div class="stop-row"><div><div class="stop-name">'+p.name+'</div><div class="stop-detail">'+d+'</div></div><div class="stop-clock">'+fmtClock(clock)+'</div></div></div>'});tl.innerHTML=html;document.querySelectorAll(".stop").forEach(function(el){el.addEventListener("click",function(){var idx=parseInt(el.getAttribute("data-stop"));activeIdx=idx;highlightStop(idx);var p=POI[idx];map.setView([p.lat,p.lon],14);markers[idx].openPopup();document.querySelector(".map-wrap").scrollIntoView({behavior:"smooth",block:"nearest"})})});var pm=Math.floor(pace/60),ps=Math.round(pace%60);rc.innerHTML='<div class="recap-card"><div class="recap-label">Allure</div><div class="recap-val">'+pm+':'+String(ps).padStart(2,"0")+'/km</div></div><div class="recap-card"><div class="recap-label">Temps</div><div class="recap-val">'+fmtDur(totalSec)+'</div></div><div class="recap-card"><div class="recap-label">Arrivee</div><div class="recap-val">'+fmtClock(startSec+totalSec)+'</div></div>';updatePopups()}
+document.querySelectorAll(".chip").forEach(function(btn){btn.addEventListener("click",function(){mode=btn.dataset.m;document.querySelectorAll(".chip").forEach(function(c){c.className=c.dataset.m===mode?"chip active":"chip inactive"});document.getElementById("objField").style.display=mode==="obj"?"block":"none";document.getElementById("paceField").style.display=mode==="pace"?"block":"none";render()})});
+document.querySelectorAll(".time-box").forEach(function(el){el.addEventListener("input",render)});
+document.getElementById("copyBtn").addEventListener("click",function(){var self=this,pace=getPace();if(isNaN(pace)||pace<=0)return;var startSec=getStartSec(),pm=Math.floor(pace/60),ps=Math.round(pace%60);var txt="Marathon de Paris 2026 - Mes splits\nAllure : "+pm+":"+String(ps).padStart(2,"0")+"/km\n\n";POI.forEach(function(p){var clock=startSec+pace*p.km,km=p.km===42.195?"42,195":p.km===21.0975?"21,1":p.km;txt+=fmtClock(clock)+"  "+p.name+" ("+km+" km)\n"});navigator.clipboard.writeText(txt).then(function(){self.textContent="Copie !";setTimeout(function(){self.textContent="Copier mes splits"},1500)}).catch(function(){})});
+document.getElementById("shareBtn").addEventListener("click",function(){var self=this,pace=getPace();if(isNaN(pace)||pace<=0)return;var totalSec=pace*42.195;var text="Marathon de Paris 2026 - Mon objectif : "+fmtDur(totalSec)+" ! Calcule tes horaires de passage ici :";if(navigator.share){navigator.share({title:"Marathon de Paris 2026",text:text,url:window.location.href}).catch(function(){})}else{navigator.clipboard.writeText(text+" "+window.location.href).then(function(){self.textContent="Lien copie !";setTimeout(function(){self.textContent="Partager"},1500)}).catch(function(){})}});
+initMap();render();
 </script>
 </body>
 </html>
