@@ -170,6 +170,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;color:var(--ink);overflow:hidden
 .stme{background:rgba(0,171,96,.10);border-radius:8px}
 .stme .stn,.stme .stp{color:var(--green);font-weight:700}
 .stopp{background:rgba(245,184,46,.22);border-radius:8px}
+.streleg{display:flex;align-items:center;gap:8px;margin:5px 2px;color:#E8641E;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.streleg::before,.streleg::after{content:"";flex:1;border-top:2px dashed #E8641E}
 .stopp .stn,.stopp .stp{color:#9A6B00;font-weight:700}
 .cal-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--cardline);cursor:pointer}
 .cal-row:last-child{border-bottom:none}
@@ -535,7 +537,8 @@ function standingsHTML(adv){
     '<div class="str sthead"><span>Pos</span><span class="stn">Équipe</span><span>J</span><span>Pts</span><span>Dif</span></div>';
   STANDINGS.forEach(s=>{const me=s.t==="Salésienne de Paris";const opp=adv&&s.t===adv;
     const cls=me?' stme':(opp?' stopp':'');
-    h+='<div class="str'+cls+'"><span>'+s.pos+'</span><span class="stn">'+s.t+'</span><span>'+s.j+'</span><span class="stp">'+s.pts+'</span><span>'+(s.dif>0?'+':'')+s.dif+'</span></div>';});
+    h+='<div class="str'+cls+'"><span>'+s.pos+'</span><span class="stn">'+s.t+'</span><span>'+s.j+'</span><span class="stp">'+s.pts+'</span><span>'+(s.dif>0?'+':'')+s.dif+'</span></div>';
+    if(s.pos===6)h+='<div class="streleg"><span>Relégation (4 derniers)</span></div>';});
   h+='</div>';return h;
 }
 function calendarHTML(){
